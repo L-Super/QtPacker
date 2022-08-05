@@ -17,6 +17,20 @@ QPushButton#packPushButton {
 	border-radius: 5px;
 }
 
+QPushButton#packPushButton:hover {
+	font-size: 14pt;
+	color: #FFFFFF;
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4588FF, stop:1 #0052F5);
+	border-radius: 5px;
+}
+
+QPushButton#packPushButton:pressed {
+	font-size: 14pt;
+	color: #FFFFFF;
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #80AEFF, stop:1 #3377FF);
+	border-radius: 5px;
+}
+
 QLineEdit {
 	font-size: 12px;
 	border: 0.5px solid #E5E5E5;
@@ -24,24 +38,27 @@ QLineEdit {
 }
 
 QComboBox {
-	font-size: 12pt;
+	font-size: 12px;
+	border-radius: 3px;
 	border: 1px solid gray;
 	color: #333333;
 	border-color: #E5E5E5;
 	background-color: #FFFFFF;
 }
 
-QComboBox::drop-down {
-	width: 40px;
-	border: none;
+/* 下拉展开后，整个下拉窗体样式 */
+QComboBox QAbstractItemView {
+	font-size: 12pt;
+	outline: none;
+    selection-color: #3377FF;/*下拉框选中项字体颜色*/
+    selection-background-color:#FFFFFF;/* 下拉框选中项的背景色 */
 }
 
-QComboBox::down-arrow {
+/* QComboBox::drop-down {
 	width: 40px;
 	border: none;
-	background: transparent;
-	/* image: url(images/combobox_arrow_down.png); */
-}
+} */
+
 
 QLabel {
 	font-size: 12pt;

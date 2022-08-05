@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/images">
         <file>resources/images/folder.png</file>
+        <file>resources/images/loading.gif</file>
     </qresource>
     <qresource prefix="/qss">
         <file>resources/style.qss</file>

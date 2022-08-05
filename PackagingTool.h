@@ -11,6 +11,19 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class PackagingTool; }
 QT_END_NAMESPACE
 
+class QLabel;
+class QMovie;
+class QVBoxLayout;
+class ProgressWidget : public QWidget{
+    Q_OBJECT
+public:
+    ProgressWidget(QWidget *parent = nullptr);
+private:
+    QLabel* label;
+    QMovie* movie;
+    QVBoxLayout* layout;
+};
+
 class PackagingTool : public QMainWindow
 {
     Q_OBJECT
@@ -42,4 +55,5 @@ private:
     QVector<QString> compilers; // windeployqt路径及文件名
     QProcess *p;
     QtPath qtPath;
+    ProgressWidget* maskLayer;
 };
