@@ -1,0 +1,49 @@
+QMainWindow#PackagingTool {
+	background-color: rgb(255, 255, 255);
+}
+
+QWidget {
+	background-color: rgb(255, 255, 255);
+}
+
+QDialog {
+	background: #FFFFFF;
+}
+
+QPushButton#packPushButton {
+	font-size: 14pt;
+	color: #FFFFFF;
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #80AEFF, stop:1 #3377FF);
+	border-radius: 5px;
+}
+
+QLineEdit {
+	font-size: 12px;
+	border: 0.5px solid #E5E5E5;
+	border-radius: 2px;
+}
+
+QComboBox {
+	font-size: 12pt;
+	border: 1px solid gray;
+	color: #333333;
+	border-color: #E5E5E5;
+	background-color: #FFFFFF;
+}
+
+QComboBox::drop-down {
+	width: 40px;
+	border: none;
+}
+
+QComboBox::down-arrow {
+	width: 40px;
+	border: none;
+	background: transparent;
+	/* image: url(images/combobox_arrow_down.png); */
+}
+
+QLabel {
+	font-size: 12pt;
+	color: #333333;
+}
