@@ -34,12 +34,12 @@ QPushButton#packPushButton:pressed {
 QLineEdit {
 	font-size: 12px;
 	border: 0.5px solid #E5E5E5;
-	border-radius: 2px;
+	border-radius: 4px;
 }
 
 QComboBox {
 	font-size: 12px;
-	border-radius: 3px;
+	border-radius: 4px;
 	border: 1px solid gray;
 	color: #333333;
 	border-color: #E5E5E5;
@@ -48,17 +48,12 @@ QComboBox {
 
 /* 下拉展开后，整个下拉窗体样式 */
 QComboBox QAbstractItemView {
-	font-size: 12pt;
 	outline: none;
+	border: 1px solid darkgray;
+    border-radius: 4px;
     selection-color: #3377FF;/*下拉框选中项字体颜色*/
     selection-background-color:#FFFFFF;/* 下拉框选中项的背景色 */
 }
-
-/* QComboBox::drop-down {
-	width: 40px;
-	border: none;
-} */
-
 
 QLabel {
 	font-size: 12pt;

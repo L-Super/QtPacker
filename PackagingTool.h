@@ -4,9 +4,6 @@
 #include <QProcess>
 #include "QtPath.h"
 
-#include <vector>
-#include <string>
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class PackagingTool; }
 QT_END_NAMESPACE
@@ -18,6 +15,8 @@ class ProgressWidget : public QWidget{
     Q_OBJECT
 public:
     ProgressWidget(QWidget *parent = nullptr);
+    void Start();
+    void Stop();
 private:
     QLabel* label;
     QMovie* movie;
@@ -45,6 +44,9 @@ private slots:
     void on_packPushButton_clicked();
 
     void on_qtPathPushButton_clicked();
+
+signals:
+    void pfinished();
 
 private:
     Ui::PackagingTool *ui;

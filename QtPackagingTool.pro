@@ -37,7 +37,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 # 程序名
 TARGET = QtPacker
 # 版本号
-VERSION = 1.2.0
+VERSION = 1.3.0
 # 中文
 RC_LANG = 0x0004
 # 公司名

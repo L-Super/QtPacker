@@ -1,9 +1,8 @@
 #include "QtPath.h"
-
+#include <QStandardPaths>
+#include <QMessageBox>
 #include <QDebug>
 #include <QDir>
-#include <QMessageBox>
-#include <QStandardPaths>
 
 #define qcout qDebug() << "[" << __FILE__ << ":" << __LINE__ << "]"
 
@@ -72,7 +71,7 @@ QString QtPath::GetSelectComplierPath(const QString& str) {
     qcout << dir.path();
     auto list = dir.entryInfoList();
     for (auto it = list.begin(); it != list.end(); it++) {
-        qcout << it->baseName();
+//        qcout << it->baseName();
         if (it->baseName() == "windeployqt")
             return it->absoluteFilePath();
     }
