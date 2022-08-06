@@ -43,7 +43,7 @@ RC_LANG = 0x0004
 # 公司名
 QMAKE_TARGET_COMPANY = LIM
 # 产品名称
-#QMAKE_TARGET_PRODUCT = QtPacker
+QMAKE_TARGET_PRODUCT = QtPacker
 # 详细描述
 #QMAKE_TARGET_DESCRIPTION = Package Qt program
 # 版权

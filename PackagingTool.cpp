@@ -18,6 +18,7 @@
 //添加进度条显示
 //遮罩层失败，原因都属于gui，不能多线程，也会阻塞
 //后期换成进度条对话框
+//使用说明放在其他位置，目前界面较丑
 
 PackagingTool::PackagingTool(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::PackagingTool),
@@ -26,7 +27,7 @@ PackagingTool::PackagingTool(QWidget* parent)
 {
     ui->setupUi(this);
     setWindowTitle("QtPacker");
-    ui->textEdit->setMarkdown("# 使用说明\n"
+    ui->textEdit->setMarkdown("## 使用说明\n"
                               "1. 选择Qt 的安装路径。\n"
                               "**不同版本路径有区别，未识别到编译器，请多尝试下一级路径或上一级。**\n"
                               "2. 编译器选择对应的工程所使用的\n"
