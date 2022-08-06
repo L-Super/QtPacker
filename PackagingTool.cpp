@@ -9,7 +9,6 @@
 #include <QDebug>
 #include <QMovie>
 
-
 #include "Config.h"
 
 // 宏定义打印log支持打印文件名-所在行号

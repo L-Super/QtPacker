@@ -43,21 +43,16 @@ RC_LANG = 0x0004
 # 公司名
 QMAKE_TARGET_COMPANY = LIM
 # 产品名称
-QMAKE_TARGET_PRODUCT = QtPacker
+#QMAKE_TARGET_PRODUCT = QtPacker
 # 详细描述
-QMAKE_TARGET_DESCRIPTION = Package Qt program
+#QMAKE_TARGET_DESCRIPTION = Package Qt program
 # 版权
 QMAKE_TARGET_COPYRIGHT = Copyright(C) 2021-2077 LIM Ltd
 # 图标
 RC_ICONS = resources/yellowman.ico
 
-#win32: LIBS += -L$$PWD/lib/ -lEverything32
-
 INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include
-
-#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/lib/Everything32.lib
-#else:win32-g++: PRE_TARGETDEPS += $$PWD/lib/libEverything32.a
 
 RESOURCES += \
     resources.qrc
