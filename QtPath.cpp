@@ -65,10 +65,10 @@ QString QtPath::RegexMatch(QRegExp ex, const QVector<QString> &v) {
 QString QtPath::GetSelectComplierPath(const QString& str) {
     QDir dir(qPath.path());
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    qcout << dir.path() << str;
+    qcout << "选择的路径及编译器：" << dir.path() << str;
     dir.cd(str);
     dir.cd("bin");
-    qcout << dir.path();
+//    qcout << dir.path();
     auto list = dir.entryInfoList();
     for (auto it = list.begin(); it != list.end(); it++) {
 //        qcout << it->baseName();

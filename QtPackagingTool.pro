@@ -52,10 +52,8 @@ TARGET = QtPacker
 ## 图标
 #RC_ICONS = resources/yellowman.ico
 
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
-
 RESOURCES += \
     resources.qrc
 
 RC_FILE += QtPacker_resource.rc
+

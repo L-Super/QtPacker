@@ -1,40 +1,46 @@
 #include "PackagingTool.h"
 #include "ui_PackagingTool.h"
 
+#include <QDesktopServices>
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMouseEvent>
 #include <QString>
 #include <QRegExp>
 #include <QDebug>
 #include <QMovie>
 
 #include "Config.h"
+#include "Version.h"
 
 // 宏定义打印log支持打印文件名-所在行号
 #define qcout qDebug() << "[" << __FILE__ << ":" << __LINE__ << "]"
 
-// TODO:状态栏添加使用说明
+// TODO:
 //添加进度条显示
 //遮罩层失败，原因都属于gui，不能多线程，也会阻塞
 //后期换成进度条对话框
-//使用说明放在其他位置，目前界面较丑
 
 PackagingTool::PackagingTool(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::PackagingTool),
+      versionLabel(new QLabel()),
+      instructionLabel(new QLabel()),
       p(new QProcess()),
       maskLayer(new ProgressWidget(this))
 {
     ui->setupUi(this);
     setWindowTitle("QtPacker");
-    ui->textEdit->setMarkdown("## 使用说明\n"
-                              "1. 选择Qt 的安装路径。\n"
-                              "**不同版本路径有区别，未识别到编译器，请多尝试下一级路径或上一级。**\n"
-                              "2. 编译器选择对应的工程所使用的\n"
-                              "3. 软件路径即生成的可执行文件路径\n"
-                              "4. 切勿保存到软件路径！选择新的存放路径\n");
-    QLabel* versionLabel  = new QLabel("V1.3.0");
+
+    //状态栏添加版本信息
+    versionLabel->setText(GetAppVersion());
     ui->statusbar->addPermanentWidget(versionLabel);
+    instructionLabel->setText("使用说明");
+    ui->statusbar->addWidget(instructionLabel);
+
+//    auto msg = new QMessageBox();
+//    msg->setText("使用");
+//    ui->statusbar->addPermanentWidget(msg);
 
     if(!Config::instance().GetQtInstallPath().isEmpty())
     {
@@ -57,6 +63,21 @@ PackagingTool::PackagingTool(QWidget* parent)
     //        Config::instance().SetQtInstallPath(qPath);
     //        SetComboBox();
     //    });
+
+    instructionLabel->installEventFilter(this);
+    // QProcess连接信号输出信息
+    //2022.08.07 之前放在槽函数中关联，导致每次点击，就会关联一次，造成点击一次会执行n+1次
+    connect(p, &QProcess::readyReadStandardOutput, this, [=] {
+        auto output = p->readAllStandardOutput();
+        ui->textEdit->clear();
+        qcout<<"clear";
+        ui->textEdit->append(output);
+    });
+    connect(p, &QProcess::readyReadStandardError, this, [=] {
+        auto output = p->readAllStandardError();
+        ui->textEdit->setTextColor(Qt::red);
+        ui->textEdit->append(output);
+    });
 }
 
 PackagingTool::~PackagingTool() {
@@ -121,7 +142,7 @@ int PackagingTool::PackProcess() {
 
     QString selectCompiler = ui->comboBox->currentText();
     QString programPath = qtPath.GetSelectComplierPath(selectCompiler);
-    qcout << "Program Path is" << programPath;
+    qcout << "windeployqt.exe path is" << programPath;
 
     QStringList arguments;
     //    arguments << "--dir"
@@ -129,30 +150,56 @@ int PackagingTool::PackProcess() {
     //              << copiedAppName;
 
     QString packedApp = savePath + "/" + appName;
-    qcout << packedApp;
+    qcout << "打包路径：" << packedApp;
     arguments << packedApp;
 
     p->start(programPath, arguments);
 //    p->startDetached(programPath, arguments);
 
-    // QProcess输出信息
-    connect(p, &QProcess::readyReadStandardOutput, this, [=] {
-        auto output = p->readAllStandardOutput();
-        ui->textEdit->clear();
-        ui->textEdit->append(output);
-    });
-    connect(p, &QProcess::readyReadStandardError, this, [=] {
-        auto output = p->readAllStandardError();
-        ui->textEdit->setTextColor(Qt::red);
-        ui->textEdit->append(output);
-    });
+
 
     if (!p->waitForFinished()) {
         qcout << "Package failed:" << p->errorString();
         QMessageBox::critical(this, ("错误"), ("编译器选择错误！"));
     }
+
 //    maskLayer->Stop();
     return 0;
+}
+
+bool PackagingTool::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == instructionLabel)
+    {
+        if (event->type() == QEvent::MouseButtonPress) //鼠标点击
+        {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+
+            if(mouseEvent->button() == Qt::LeftButton)
+            {
+                QDialog dlg(this);
+                dlg.setFixedSize(QSize(500,200));
+                auto layout = new QHBoxLayout(&dlg);
+                auto label = new QLabel(&dlg);
+                label->setText("<h3>使用说明</h3><br>"
+                               "1. 选择Qt 的安装路径。<br>"
+                               "<b>不同版本路径有区别，未识别到编译器，请多尝试下一级路径或上一级。</b><br>"
+                               "2. 编译器选择对应的工程所使用的<br>"
+                               "3. 软件路径即生成的可执行文件路径<br>"
+                               "4. 切勿保存到软件路径！选择新的存放路径<br>");
+                layout->addWidget(label);
+                dlg.exec();
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+    else
+        // pass the event on to the parent class
+        return QWidget::eventFilter(obj, event);
 }
 
 void PackagingTool::on_appPathPushButton_clicked() {
@@ -175,6 +222,8 @@ void PackagingTool::on_packPushButton_clicked() {
         return;
     }
 
+    ui->statusbar->showMessage("开始打包...", 1000);
+//    _sleep(5000);
 //    maskLayer->Start();
 //    return;
 
@@ -183,7 +232,20 @@ void PackagingTool::on_packPushButton_clicked() {
         qcout << "PackProcess func failed";
         return;
     }
-    QMessageBox::information(this, ("提示"), ("软件打包成功！"), QMessageBox::Ok);
+    else
+    {
+        ui->statusbar->showMessage("打包完成", 2000);
+        QMessageBox box(QMessageBox::Information, "提示", "软件打包成功！\n是否打开文件夹？");
+        box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        box.setButtonText(QMessageBox::Ok, QString("是"));
+        box.setButtonText(QMessageBox::Cancel, QString("否"));
+        int button = box.exec();
+        if (button == QMessageBox::Ok)
+        {
+            QString url = "file:///" + Config::instance().GetSavePath();
+            QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));//QUrl::TolerantMode：QUrl 将尝试纠正 URL 中的一些常见错误。这种模式对于解析来自严格符合标准的来源的 URL 非常有用。
+        }
+    }
 }
 
 void PackagingTool::on_qtPathPushButton_clicked() {

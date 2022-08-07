@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <QMainWindow>
 #include <QProcess>
@@ -17,6 +17,7 @@ public:
     ProgressWidget(QWidget *parent = nullptr);
     void Start();
     void Stop();
+
 private:
     QLabel* label;
     QMovie* movie;
@@ -36,6 +37,9 @@ public:
     bool CopyApp();
     int PackProcess();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private slots:
     void on_appPathPushButton_clicked();
 
@@ -45,11 +49,10 @@ private slots:
 
     void on_qtPathPushButton_clicked();
 
-signals:
-    void pfinished();
-
 private:
     Ui::PackagingTool *ui;
+    QLabel* versionLabel;
+    QLabel* instructionLabel;
     QString filePathAndName; // 文件路径及文件名
     QString appPath; // 文件路径
     QString appName;

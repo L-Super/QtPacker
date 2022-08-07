@@ -1,11 +1,10 @@
 #include <windows.h>
-#include "Version.h"
 
-IDI_ICON1	ICON	"resources/yellowman.ico"
+IDI_ICON1	ICON	DISCARDABLE	"resources\\yellowman.ico"
 
 VS_VERSION_INFO VERSIONINFO
-	FILEVERSION FILE_VERSION
-	PRODUCTVERSION PRODUCT_VERSION
+	FILEVERSION 1,3,2
+	PRODUCTVERSION 1,3,2
 	FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 	FILEFLAGS VS_FF_DEBUG
@@ -20,13 +19,13 @@ VS_VERSION_INFO VERSIONINFO
 		BEGIN
 			BLOCK "000404b0"
 			BEGIN
-				VALUE "CompanyName", COMPANY_NAME
-				VALUE "FileDescription", FILE_DESCRIPTION
-				VALUE "FileVersion", FILE_VERSION
-				VALUE "LegalCopyright", LEGAL_COPYRIGHT
-				VALUE "OriginalFilename", ORIGINAL_FILE_NAME
-				VALUE "ProductName", PRODUCT_NAME
-				VALUE "ProductVersion", PRODUCT_VERSION_STR
+				VALUE "CompanyName", "LIM\0"
+				VALUE "FileDescription", "QtPacker\0"
+				VALUE "FileVersion", "1.3.2\0"
+				VALUE "LegalCopyright", "Copyright(C) 2021-2077 LIM Ltd\0"
+				VALUE "OriginalFilename", "QtPacker.exe\0"
+				VALUE "ProductName", "QtPacker\0"
+				VALUE "ProductVersion", "1.3.2\0"
 			END
 		END
 		BLOCK "VarFileInfo"
