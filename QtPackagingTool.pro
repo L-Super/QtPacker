@@ -24,7 +24,8 @@ SOURCES += \
 HEADERS += \
     Config.h \
     PackagingTool.h \
-    QtPath.h
+    QtPath.h \
+    Version.h
 
 FORMS += \
     PackagingTool.ui
@@ -36,23 +37,25 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 # 程序名
 TARGET = QtPacker
-# 版本号
-VERSION = 1.3.0
-# 中文
-RC_LANG = 0x0004
-# 公司名
-QMAKE_TARGET_COMPANY = LIM
-# 产品名称
-QMAKE_TARGET_PRODUCT = QtPacker
-# 详细描述
-#QMAKE_TARGET_DESCRIPTION = Package Qt program
-# 版权
-QMAKE_TARGET_COPYRIGHT = Copyright(C) 2021-2077 LIM Ltd
-# 图标
-RC_ICONS = resources/yellowman.ico
+## 版本号
+#VERSION = 1.3.0
+## 中文
+#RC_LANG = 0x0004
+## 公司名
+#QMAKE_TARGET_COMPANY = LIM
+## 产品名称
+#QMAKE_TARGET_PRODUCT = QtPacker
+## 详细描述
+##QMAKE_TARGET_DESCRIPTION = Package Qt program
+## 版权
+#QMAKE_TARGET_COPYRIGHT = Copyright(C) 2021-2077 LIM Ltd
+## 图标
+#RC_ICONS = resources/yellowman.ico
 
 INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include
 
 RESOURCES += \
     resources.qrc
+
+RC_FILE += QtPacker_resource.rc

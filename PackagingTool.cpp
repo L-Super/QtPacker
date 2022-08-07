@@ -1,4 +1,4 @@
-﻿#include "PackagingTool.h"
+#include "PackagingTool.h"
 #include "ui_PackagingTool.h"
 
 #include <QStandardPaths>
@@ -33,6 +33,8 @@ PackagingTool::PackagingTool(QWidget* parent)
                               "2. 编译器选择对应的工程所使用的\n"
                               "3. 软件路径即生成的可执行文件路径\n"
                               "4. 切勿保存到软件路径！选择新的存放路径\n");
+    QLabel* versionLabel  = new QLabel("V1.3.0");
+    ui->statusbar->addPermanentWidget(versionLabel);
 
     if(!Config::instance().GetQtInstallPath().isEmpty())
     {
