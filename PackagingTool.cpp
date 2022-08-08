@@ -38,10 +38,6 @@ PackagingTool::PackagingTool(QWidget* parent)
     instructionLabel->setText("使用说明");
     ui->statusbar->addWidget(instructionLabel);
 
-//    auto msg = new QMessageBox();
-//    msg->setText("使用");
-//    ui->statusbar->addPermanentWidget(msg);
-
     if(!Config::instance().GetQtInstallPath().isEmpty())
     {
         qtPath.SetQtPath(Config::instance().GetQtInstallPath());
@@ -55,14 +51,6 @@ PackagingTool::PackagingTool(QWidget* parent)
 //    maskLayer->setFixedSize(this->size());//设置窗口大小
 //    maskLayer->setVisible(false);
 //    stackUnder(maskLayer);
-
-    //上面的代码会触发此信号,影响combox
-    //    connect(ui->qtPathLineEdit,&QLineEdit::editingFinished,this,[this](){
-    //        QString qPath = QDir::toNativeSeparators(ui->qtPathLineEdit->text());
-    //        qtPath.SetQtPath(qPath);
-    //        Config::instance().SetQtInstallPath(qPath);
-    //        SetComboBox();
-    //    });
 
     instructionLabel->installEventFilter(this);
     // QProcess连接信号输出信息
@@ -156,8 +144,6 @@ int PackagingTool::PackProcess() {
     p->start(programPath, arguments);
 //    p->startDetached(programPath, arguments);
 
-
-
     if (!p->waitForFinished()) {
         qcout << "Package failed:" << p->errorString();
         QMessageBox::critical(this, ("错误"), ("编译器选择错误！"));
@@ -167,6 +153,7 @@ int PackagingTool::PackProcess() {
     return 0;
 }
 
+//添加事件过滤器，实现状态栏的QLabel能够点击触发
 bool PackagingTool::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == instructionLabel)
@@ -177,13 +164,13 @@ bool PackagingTool::eventFilter(QObject *obj, QEvent *event)
 
             if(mouseEvent->button() == Qt::LeftButton)
             {
-                QDialog dlg(this);
-                dlg.setFixedSize(QSize(500,200));
+                QDialog dlg;
+                dlg.setFixedSize(QSize(480,200));
                 auto layout = new QHBoxLayout(&dlg);
                 auto label = new QLabel(&dlg);
-                label->setText("<h3>使用说明</h3><br>"
-                               "1. 选择Qt 的安装路径。<br>"
-                               "<b>不同版本路径有区别，未识别到编译器，请多尝试下一级路径或上一级。</b><br>"
+                label->setText("<h3>使用说明</h3>"
+                               "1. 选择Qt 的安装路径"
+                               "<p style=\"font-size:14px\"><b>不同版本路径有区别，未识别到编译器，请尝试上下一级路径</b></p>"
                                "2. 编译器选择对应的工程所使用的<br>"
                                "3. 软件路径即生成的可执行文件路径<br>"
                                "4. 切勿保存到软件路径！选择新的存放路径<br>");
