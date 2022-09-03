@@ -55,5 +55,11 @@ TARGET = QtPacker
 RESOURCES += \
     resources.qrc
 
+_MSC_VER{
+RC_FILE += QtPacker_resources.rc
+message("load MSVC rc file")
+}
+else{
 RC_FILE += QtPacker_resource.rc
-
+message("load MinGw rc file")
+}
