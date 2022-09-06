@@ -118,16 +118,22 @@ bool PackagingTool::CopyApp() {
     // 删除待打包路径已存在的app
     if (QFile::exists(decApp))
     {
-        qcout<<"exe is exist, so delete it";
-        QFile::remove(decApp);
+        qcout<<"exe is exist";
+        if(decApp != filePathAndName)
+        {
+            qcout<<"path is different, so delete it";
+            QFile::remove(decApp);
+        }
     }
     return QFile::copy(filePathAndName, decApp);
 }
 
 int PackagingTool::PackProcess() {
     if (!CopyApp())
-        return -1;
-
+    {
+        qcout<<"maybe path is same or failed";
+//        return -1;
+    }
     QString selectCompiler = ui->comboBox->currentText();
     QString programPath = qtPath.GetSelectComplierPath(selectCompiler);
     qcout << "windeployqt.exe path is" << programPath;
