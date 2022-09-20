@@ -206,6 +206,11 @@ void PackagingTool::on_savePathPushButton_clicked() {
 }
 
 void PackagingTool::on_packPushButton_clicked() {
+    if(ui->qtPathLineEdit->text().isEmpty())
+    {
+        QMessageBox::critical(this, ("错误"), ("Qt路径未选择！"));
+        return;
+    }
     if (appPath.isEmpty() && ui->appPathLineEdit->text().isEmpty()) {
         QMessageBox::critical(this, ("错误"), ("软件路径未选择！"));
         return;
