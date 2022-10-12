@@ -1,5 +1,5 @@
-#include "PackagingTool.h"
-#include "ui_PackagingTool.h"
+#include "PackTool.h"
+#include "ui_PackTool.h"
 
 #include <QDesktopServices>
 #include <QStandardPaths>
@@ -13,17 +13,15 @@
 
 #include "Config.h"
 #include "Version.h"
-
-// 宏定义打印log支持打印文件名-所在行号
-#define qcout qDebug() << "[" << __FILE__ << ":" << __LINE__ << "]"
+#include "Log.h"
 
 // TODO:
 //添加进度条显示
 //遮罩层失败，原因都属于gui，不能多线程，也会阻塞
 //后期换成进度条对话框
 
-PackagingTool::PackagingTool(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::PackagingTool),
+PackTool::PackTool(QWidget* parent)
+    : QMainWindow(parent), ui(new Ui::PackTool),
       versionLabel(new QLabel()),
       instructionLabel(new QLabel()),
       p(new QProcess()),
@@ -68,12 +66,12 @@ PackagingTool::PackagingTool(QWidget* parent)
     });
 }
 
-PackagingTool::~PackagingTool() {
+PackTool::~PackTool() {
     delete ui;
     maskLayer->deleteLater();
 }
 
-void PackagingTool::OpenAppPath() {
+void PackTool::OpenAppPath() {
     QString str("选择待打包程序");
     filePathAndName = QFileDialog::getOpenFileName(this, str, ".", tr("*.exe"));
     //    qDebug()<< "filePathAndName " << filePathAndName;
@@ -88,13 +86,13 @@ void PackagingTool::OpenAppPath() {
     //    qDebug() << "filePath " << appPath;
 }
 
-void PackagingTool::SavePath() {
+void PackTool::SavePath() {
     savePath = QFileDialog::getExistingDirectory(this, ("保存路径"), appPath);
     Config::instance().SetSavePath(savePath);
 }
 
 // 从搜索结果获取下拉框选项
-void PackagingTool::SetComboBox() {
+void PackTool::SetComboBox() {
     compilers = qtPath.GetComplierResult();
 
     for (const auto& it : compilers) {
@@ -102,7 +100,7 @@ void PackagingTool::SetComboBox() {
     }
 }
 
-bool PackagingTool::CopyApp() {
+bool PackTool::CopyApp() {
     QString decApp;
     if(appName.isEmpty())
     {
@@ -128,7 +126,7 @@ bool PackagingTool::CopyApp() {
     return QFile::copy(filePathAndName, decApp);
 }
 
-int PackagingTool::PackProcess() {
+int PackTool::PackProcess() {
     if (!CopyApp())
     {
         qcout<<"maybe path is same or failed";
@@ -160,7 +158,7 @@ int PackagingTool::PackProcess() {
 }
 
 //添加事件过滤器，实现状态栏的QLabel能够点击触发
-bool PackagingTool::eventFilter(QObject *obj, QEvent *event)
+bool PackTool::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == instructionLabel)
     {
@@ -195,17 +193,17 @@ bool PackagingTool::eventFilter(QObject *obj, QEvent *event)
         return QWidget::eventFilter(obj, event);
 }
 
-void PackagingTool::on_appPathPushButton_clicked() {
+void PackTool::on_appPathPushButton_clicked() {
     OpenAppPath();
     ui->appPathLineEdit->setText(appPath);
 }
 
-void PackagingTool::on_savePathPushButton_clicked() {
+void PackTool::on_savePathPushButton_clicked() {
     SavePath();
     ui->savePathLineEdit->setText(savePath);
 }
 
-void PackagingTool::on_packPushButton_clicked() {
+void PackTool::on_packPushButton_clicked() {
     if(ui->qtPathLineEdit->text().isEmpty())
     {
         QMessageBox::critical(this, ("错误"), ("Qt路径未选择！"));
@@ -246,7 +244,7 @@ void PackagingTool::on_packPushButton_clicked() {
     }
 }
 
-void PackagingTool::on_qtPathPushButton_clicked() {
+void PackTool::on_qtPathPushButton_clicked() {
     //返回桌面路径
     QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     //    qDebug()<<defaultPath;

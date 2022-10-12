@@ -5,7 +5,7 @@
 #include "QtPath.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class PackagingTool; }
+namespace Ui { class PackTool; }
 QT_END_NAMESPACE
 
 class QLabel;
@@ -24,13 +24,13 @@ private:
     QVBoxLayout* layout;
 };
 
-class PackagingTool : public QMainWindow
+class PackTool : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    PackagingTool(QWidget *parent = nullptr);
-    ~PackagingTool();
+    PackTool(QWidget *parent = nullptr);
+    ~PackTool();
     void OpenAppPath();
     void SavePath();
     void SetComboBox();
@@ -50,7 +50,7 @@ private slots:
     void on_qtPathPushButton_clicked();
 
 private:
-    Ui::PackagingTool *ui;
+    Ui::PackTool *ui;
     QLabel* versionLabel;
     QLabel* instructionLabel;
     QString filePathAndName; // 文件路径及文件名

@@ -3,8 +3,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDir>
-
-#define qcout qDebug() << "[" << __FILE__ << ":" << __LINE__ << "]"
+#include "Log.h"
 
 QtPath::QtPath(QObject *parent)
     : QObject{parent},
@@ -13,7 +12,6 @@ QtPath::QtPath(QObject *parent)
 }
 
 void QtPath::SetQtPath(const QString &path) {
-//    qcout << path;
     FindCompiler(std::forward<const QString &>(path));
 }
 

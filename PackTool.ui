@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PackagingTool</class>
- <widget class="QMainWindow" name="PackagingTool">
+ <class>PackTool</class>
+ <widget class="QMainWindow" name="PackTool">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>309</height>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -194,7 +194,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

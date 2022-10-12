@@ -17,18 +17,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Config.cpp \
+    PackTool.cpp \
     QtPath.cpp \
-    main.cpp \
-    PackagingTool.cpp
+    main.cpp
 
 HEADERS += \
     Config.h \
-    PackagingTool.h \
+    Log.h \
+    PackTool.h \
     QtPath.h \
     Version.h
 
 FORMS += \
-    PackagingTool.ui
+    PackTool.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

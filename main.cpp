@@ -1,4 +1,4 @@
-﻿#include "PackagingTool.h"
+﻿#include "PackTool.h"
 #include <QApplication>
 #include <QFile>
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
         style.close();
     }
 
-    PackagingTool w;
+    PackTool w;
     w.show();
     return a.exec();
 }
