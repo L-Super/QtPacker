@@ -19,6 +19,7 @@ SOURCES += \
     Config.cpp \
     PackTool.cpp \
     QtPath.cpp \
+    ZipTool.cpp \
     main.cpp
 
 HEADERS += \
@@ -26,7 +27,8 @@ HEADERS += \
     Log.h \
     PackTool.h \
     QtPath.h \
-    Version.h
+    Version.h \
+    ZipTool.h
 
 FORMS += \
     PackTool.ui
@@ -64,3 +66,17 @@ else{
 RC_FILE += QtPacker_resource.rc
 message("load MinGw rc file")
 }
+
+msvc {
+    QMAKE_CFLAGS += /utf-8
+    QMAKE_CXXFLAGS += /utf-8
+}
+
+#win32: LIBS += -L$$PWD/lib/ -lzlib -lbz2 -lzip
+
+win32: LIBS += -L$$PWD/bin/ -lzip
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
+
+

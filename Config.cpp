@@ -34,7 +34,7 @@ bool Config::ReadPath() {
 
 bool Config::WritePath() {
     QString path = QCoreApplication::applicationDirPath() + "/config.ini";
-    qDebug() << path;
+//    qDebug() << path;
     QSettings settings(path, QSettings::IniFormat);
     settings.beginGroup("Path");
     settings.setValue("Qt Install Path", qtInstallPath);
