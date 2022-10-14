@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QString>
 #include <QRegExp>
+#include <QThread>
 #include <QDebug>
 #include <QMovie>
 
@@ -16,17 +17,14 @@
 #include "ZipTool.h"
 #include "Log.h"
 
-// TODO:
-//添加进度条显示
-//遮罩层失败，原因都属于gui，不能多线程，也会阻塞
-//后期换成进度条对话框
-
 PackTool::PackTool(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::PackTool),
       versionLabel(new QLabel()),
       instructionLabel(new QLabel()),
       p(new QProcess()),
-      maskLayer(new ProgressWidget(this))
+      maskLayer(new ProgressWidget(this)),
+      zip(new ZipTool()),
+      workerThread(new QThread())
 {
     ui->setupUi(this);
     setWindowTitle("QtPacker");
@@ -64,11 +62,30 @@ PackTool::PackTool(QWidget* parent)
         ui->textEdit->setTextColor(Qt::red);
         ui->textEdit->append(output);
     });
+
+    zip->moveToThread(workerThread);
+    //信号发射后启动线程工作
+    connect(this, &PackTool::zipSignal, zip, &ZipTool::Zip);
+    //该线程结束时销毁
+    connect(workerThread, &QThread::finished, zip, &QObject::deleteLater);
+    //线程 执行函数结束后发送信号，对结果进行处理
+    connect(zip, &ZipTool::zipSuccess, this, [this](){
+        ui->textEdit->append("制作压缩包成功");
+        QMessageBox::information(this,"提示","制作压缩包成功！");
+    });
+    connect(zip, &ZipTool::zipFailed,this, [this](const QString& errorStr){
+        ui->textEdit->append(errorStr);
+        QMessageBox::information(this,"提示",QString("制作压缩包失败！\n%1").arg(errorStr));
+    });
+    //创建线程（此时未启动）
+    workerThread->start();
 }
 
 PackTool::~PackTool() {
     delete ui;
     maskLayer->deleteLater();
+    workerThread->quit();
+    workerThread->wait();
 }
 
 void PackTool::OpenAppPath() {
@@ -248,13 +265,15 @@ void PackTool::on_packPushButton_clicked() {
         auto zipName = appName.left(appName.lastIndexOf(".")) + ".zip";
         qcout<<zipName;
         auto path = Config::instance().GetSavePath();
-        if(zip.Zip(zipName, path) == false)
-        {
-            qcout<<"zip error";
-            return;
-        }
-        ui->textEdit->append("制作压缩包成功");
-        QMessageBox::information(this,"提示","制作压缩包成功！");
+        //发射信号，开始执行线程
+        emit zipSignal(zipName, path);
+//        if(zip.Zip(zipName, path) == false)
+//        {
+//            qcout<<"zip error";
+//            return;
+//        }
+//        ui->textEdit->append("制作压缩包成功");
+//        QMessageBox::information(this,"提示","制作压缩包成功！");
     }
 //    maskLayer->Stop();
 }

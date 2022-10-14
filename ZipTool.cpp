@@ -47,6 +47,7 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
     QDir dir(folderPath);
     if (!dir.exists()) {
         QMessageBox::warning(nullptr, "Warn","选择的路径不存在");
+        emit zipFailed("选择的路径不存在");
         return false;
     }
 
@@ -64,6 +65,7 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
     if ((error != ZIP_ER_OK) && (z == nullptr))
     {
         qcout<<"zip_open failed";
+        emit zipFailed("zip_open failed");
         return false;
     }
 
@@ -80,15 +82,18 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
             error = zip_file_add(z, relativePath.toUtf8(), src, 0);
             if (error == -1)
             {
-                qcout << QString("Error adding file '%1': %2")
+                auto str = QString("Error adding file '%1': %2")
                     .arg(it.fileName(), zip_strerror(z));
+                qcout<<str;
                 zip_source_free(src);
                 zip_close(z);
+                emit zipFailed(str);
                 return false;
             }
         }
     }
 
     zip_close(z);
+    emit zipSuccess();
     return true;
 }

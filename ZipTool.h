@@ -22,6 +22,10 @@ public:
      */
     bool Zip(const QString& zipName, const QString& folderPath);
 
+signals:
+    void zipSuccess();
+    void zipFailed(const QString&);
+
 private:
     QVector<QFileInfo> files;//保存待压缩文件夹里的所有文件信息
     QString fatherDir;//记录压缩包的根文件夹

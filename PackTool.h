@@ -8,6 +8,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class PackTool; }
 QT_END_NAMESPACE
 
+class ZipTool;
 class QLabel;
 class QMovie;
 class QVBoxLayout;
@@ -49,6 +50,9 @@ private slots:
 
     void on_qtPathPushButton_clicked();
 
+signals:
+    void zipSignal(const QString &,const QString&);
+
 private:
     Ui::PackTool *ui;
     QLabel* versionLabel;
@@ -61,4 +65,6 @@ private:
     QProcess *p;
     QtPath qtPath;
     ProgressWidget* maskLayer;
+    ZipTool *zip;
+    QThread *workerThread;
 };
