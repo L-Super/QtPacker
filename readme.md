@@ -19,7 +19,17 @@ Qt图形化自动化打包工具，针对基于Qt开发的程序进行打包。�
 ## TODO
 
 - [x] 添加加载动画或进度条显示（目前有问题，未实现）
+
 - [x] 打包完成后添加是否打开文件管理器查看已打包好的文件功能
+
 - [x] 增加压缩包功能，自动将打包好的文件压缩
+
 - [ ] 增加VC环境配置功能
+
 - [ ] 压缩包第二次压缩时，提示是否删除原压缩文件
+
+## 已知问题
+- [ ] 打包MSVC时会有概率失败，错误信息：
+```
+Unable to find dependent libraries of D:\Qt\5.15.2\mingw81_64\bin\Qt5Widgetsd. dll :Cannot open 'D:/Qt/5.15.2/mingw81_64/bin/Qt5Widgetsd.dll' :
+```
