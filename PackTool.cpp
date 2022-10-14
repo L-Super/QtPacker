@@ -164,9 +164,6 @@ int PackTool::PackProcess()
     qcout << "windeployqt.exe path is" << programPath;
 
     QStringList arguments;
-    //    arguments << "--dir"
-    //              << savePath
-    //              << copiedAppName;
 
     QString packedApp = savePath + "/" + appName;
     qcout << "打包路径：" << packedApp;
@@ -180,8 +177,6 @@ int PackTool::PackProcess()
         qcout << "Package failed:" << p->errorString();
         QMessageBox::critical(this, ("错误"), ("编译器选择错误！"));
     }
-
-    //    maskLayer->Stop();
     return 0;
 }
 
