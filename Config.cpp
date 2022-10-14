@@ -12,7 +12,7 @@ Config::Config(QObject *parent)
     QFile file(filePath);
     if (!file.exists()) {
         //        file.open(QIODevice::WriteOnly);
-        qWarning() << "file not exists";
+        qWarning() << "ini file not exists";
         file.close();
         WritePath();
     }
