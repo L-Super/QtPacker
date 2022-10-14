@@ -44,10 +44,10 @@ PackTool::PackTool(QWidget* parent)
     ui->appPathLineEdit->setText(Config::instance().GetAppPath());
     ui->savePathLineEdit->setText(Config::instance().GetSavePath());
 
-//    //进度遮罩层
-//    maskLayer->setFixedSize(this->size());//设置窗口大小
-//    maskLayer->setVisible(false);
-//    stackUnder(maskLayer);
+    //进度遮罩层
+    maskLayer->setFixedSize(this->size());//设置窗口大小
+    maskLayer->setVisible(false);
+    stackUnder(maskLayer);
 
     instructionLabel->installEventFilter(this);
     // QProcess连接信号输出信息
@@ -70,10 +70,12 @@ PackTool::PackTool(QWidget* parent)
     connect(workerThread, &QThread::finished, zip, &QObject::deleteLater);
     //线程 执行函数结束后发送信号，对结果进行处理
     connect(zip, &ZipTool::zipSuccess, this, [this](){
+        maskLayer->Stop();
         ui->textEdit->append("制作压缩包成功");
         QMessageBox::information(this,"提示","制作压缩包成功！");
     });
     connect(zip, &ZipTool::zipFailed,this, [this](const QString& errorStr){
+        maskLayer->Stop();
         ui->textEdit->append(errorStr);
         QMessageBox::information(this,"提示",QString("制作压缩包失败！\n%1").arg(errorStr));
     });
@@ -174,6 +176,40 @@ int PackTool::PackProcess() {
     return 0;
 }
 
+void PackTool::SelectionAfterProcessDone()
+{
+    QMessageBox box(QMessageBox::Information, "提示", "软件打包成功！\n是否打开文件夹或制作压缩包？");
+    box.setStandardButtons(QMessageBox::Yes | QMessageBox::Ok | QMessageBox::Cancel);
+    box.setButtonText(QMessageBox::Yes, QString("制作压缩包"));
+    box.setButtonText(QMessageBox::Ok, QString("打开文件夹"));
+    box.setButtonText(QMessageBox::Cancel, QString("关闭"));
+    int button = box.exec();
+    if (button == QMessageBox::Ok)
+    {
+        QString url = "file:///" + Config::instance().GetSavePath();
+        //QUrl::TolerantMode：QUrl 将尝试纠正 URL 中的一些常见错误。这种模式对于解析来自严格符合标准的来源的 URL 非常有用。
+        QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
+    }
+    if(button == QMessageBox::Yes)
+    {
+        maskLayer->Start();
+        ZipTool zip;
+        auto appName = Config::instance().GetConfig("app name");
+        auto zipName = appName.left(appName.lastIndexOf(".")) + ".zip";
+        qcout<<zipName;
+        auto path = Config::instance().GetSavePath();
+        //发射信号，开始执行线程
+        emit zipSignal(zipName, path);
+//        if(zip.Zip(zipName, path) == false)
+//        {
+//            qcout<<"zip error";
+//            return;
+//        }
+//        ui->textEdit->append("制作压缩包成功");
+//        QMessageBox::information(this,"提示","制作压缩包成功！");
+    }
+}
+
 //添加事件过滤器，实现状态栏的QLabel能够点击触发
 bool PackTool::eventFilter(QObject *obj, QEvent *event)
 {
@@ -236,7 +272,7 @@ void PackTool::on_packPushButton_clicked() {
     }
 
     ui->statusbar->showMessage("开始打包...", 1000);
-//    _sleep(5000);
+
 //    maskLayer->Start();
 
     // 调用打包程序
@@ -246,35 +282,10 @@ void PackTool::on_packPushButton_clicked() {
     }
 
     ui->statusbar->showMessage("打包完成", 2000);
-    QMessageBox box(QMessageBox::Information, "提示", "软件打包成功！\n是否打开文件夹或制作压缩包？");
-    box.setStandardButtons(QMessageBox::Yes | QMessageBox::Ok | QMessageBox::Cancel);
-    box.setButtonText(QMessageBox::Yes, QString("制作压缩包"));
-    box.setButtonText(QMessageBox::Ok, QString("打开文件夹"));
-    box.setButtonText(QMessageBox::Cancel, QString("关闭"));
-    int button = box.exec();
-    if (button == QMessageBox::Ok)
-    {
-        QString url = "file:///" + Config::instance().GetSavePath();
-        //QUrl::TolerantMode：QUrl 将尝试纠正 URL 中的一些常见错误。这种模式对于解析来自严格符合标准的来源的 URL 非常有用。
-        QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
-    }
-    if(button == QMessageBox::Yes)
-    {
-        ZipTool zip;
-        auto appName = Config::instance().GetConfig("app name");
-        auto zipName = appName.left(appName.lastIndexOf(".")) + ".zip";
-        qcout<<zipName;
-        auto path = Config::instance().GetSavePath();
-        //发射信号，开始执行线程
-        emit zipSignal(zipName, path);
-//        if(zip.Zip(zipName, path) == false)
-//        {
-//            qcout<<"zip error";
-//            return;
-//        }
-//        ui->textEdit->append("制作压缩包成功");
-//        QMessageBox::information(this,"提示","制作压缩包成功！");
-    }
+
+    SelectionAfterProcessDone();
+
+
 //    maskLayer->Stop();
 }
 
@@ -317,7 +328,6 @@ void ProgressWidget::Start()
 {
     this->setVisible(true);
     this->raise();
-    qcout<<"start";
 }
 
 void ProgressWidget::Stop()

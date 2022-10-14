@@ -37,6 +37,7 @@ public:
     void SetComboBox();
     bool CopyApp();
     int PackProcess();
+    void SelectionAfterProcessDone();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

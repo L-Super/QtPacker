@@ -52,7 +52,11 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
     }
 
     //分割路径
-    fatherDir = dir.path().split("/").last();
+    //fixed 截取错误问题
+    //"E:/Code/qt-packer/Debug/1/libgcc_s_seh-1.dll"
+    //原先截取错误，结果成了1.dll
+    //TODO:最前面的"/"不确定是否有隐患
+    fatherDir = "/" + dir.path().split("/").last() + "/";
 
     auto err = RecursiveFiles(dir.path());
     if(err < 0)
@@ -69,7 +73,16 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
         return false;
     }
 
-    for (const auto& it : qAsConst(files)) {
+//    for (const auto& it : qAsConst(files))
+//    {
+//        qcout<<fatherDir<<it.filePath();
+//        auto filePath = it.filePath();
+//        auto relativePath = filePath.mid(filePath.lastIndexOf(fatherDir));
+//        auto cleanPath = QDir::cleanPath(relativePath);
+//        qcout<<"截取后路径"<<relativePath <<cleanPath;
+//    }
+    for (const auto& it : qAsConst(files))
+    {
         zip_source* src = zip_source_file(z, it.absoluteFilePath().toUtf8(), 0, 0);
         if (src)
         {
@@ -78,6 +91,8 @@ bool ZipTool::Zip(const QString &zipName, const QString &folderPath)
             //分割出相对路径。原路径是绝对路径，若打包则会是绝对路径的文件夹结构。
             //目的：E:\Code\test\a.txt -> test\a.txt
             auto relativePath = filePath.mid(filePath.lastIndexOf(fatherDir));
+
+//            qcout<<"file"<<relativePath;
 
             error = zip_file_add(z, relativePath.toUtf8(), src, 0);
             if (error == -1)
