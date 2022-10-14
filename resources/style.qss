@@ -15,6 +15,7 @@ QPushButton#packPushButton {
 	color: #FFFFFF;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #80AEFF, stop:1 #3377FF);
 	border-radius: 5px;
+	padding: 5px 12px 5px 12px;
 }
 
 QPushButton#packPushButton:hover {
@@ -22,6 +23,7 @@ QPushButton#packPushButton:hover {
 	color: #FFFFFF;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4588FF, stop:1 #0052F5);
 	border-radius: 5px;
+	padding: 5px 12px 5px 12px;
 }
 
 QPushButton#packPushButton:pressed {
@@ -29,6 +31,7 @@ QPushButton#packPushButton:pressed {
 	color: #FFFFFF;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #80AEFF, stop:1 #3377FF);
 	border-radius: 5px;
+	padding: 5px 12px 5px 12px;
 }
 
 QLineEdit {
