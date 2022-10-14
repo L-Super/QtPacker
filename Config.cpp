@@ -6,11 +6,13 @@
 #include <QSettings>
 
 Config::Config(QObject *parent)
-    : QObject{parent} {
+    : QObject{parent}
+{
     QString path = QCoreApplication::applicationDirPath();
     QString filePath = path + "/config.ini";
     QFile file(filePath);
-    if (!file.exists()) {
+    if (!file.exists())
+    {
         //        file.open(QIODevice::WriteOnly);
         qWarning() << "ini file not exists";
         file.close();
@@ -20,7 +22,8 @@ Config::Config(QObject *parent)
     ReadPath();
 }
 
-bool Config::ReadPath() {
+bool Config::ReadPath()
+{
     QString path = QCoreApplication::applicationDirPath();
     QSettings settings(path + "/config.ini", QSettings::IniFormat);
     settings.beginGroup("Path");
@@ -32,9 +35,10 @@ bool Config::ReadPath() {
     return true;
 }
 
-bool Config::WritePath() {
+bool Config::WritePath()
+{
     QString path = QCoreApplication::applicationDirPath() + "/config.ini";
-//    qDebug() << path;
+    //    qDebug() << path;
     QSettings settings(path, QSettings::IniFormat);
     settings.beginGroup("Path");
     settings.setValue("Qt Install Path", qtInstallPath);
@@ -44,36 +48,40 @@ bool Config::WritePath() {
     return true;
 }
 
-Config &Config::instance() {
+Config &Config::instance()
+{
     static Config c;
     return c;
 }
 
-void Config::SetQtInstallPath(const QString &path) {
+void Config::SetQtInstallPath(const QString &path)
+{
     qtInstallPath = path;
     WritePath();
 }
 
-void Config::SetAppPath(const QString &path) {
+void Config::SetAppPath(const QString &path)
+{
     appPath = path;
     WritePath();
 }
 
-void Config::SetSavePath(const QString &path) {
+void Config::SetSavePath(const QString &path)
+{
     savePath = path;
     WritePath();
 }
 
-void Config::WriteConfig(const QString &key, const QString &value,const QString &group/* ="" */)
+void Config::WriteConfig(const QString &key, const QString &value, const QString &group /* ="" */)
 {
     QString path = QCoreApplication::applicationDirPath() + "/config.ini";
     QSettings settings(path, QSettings::IniFormat);
     settings.beginGroup(group);
-    settings.setValue(key,value);
+    settings.setValue(key, value);
     settings.endGroup();
 }
 
-QString Config::GetConfig(const QString &key,const QString &group/* ="" */)
+QString Config::GetConfig(const QString &key, const QString &group /* ="" */)
 {
     QString path = QCoreApplication::applicationDirPath() + "/config.ini";
     QSettings settings(path, QSettings::IniFormat);
@@ -83,17 +91,17 @@ QString Config::GetConfig(const QString &key,const QString &group/* ="" */)
     return value;
 }
 
-//void Config::SetComplierList(const QVector<QString> &list)
+// void Config::SetComplierList(const QVector<QString> &list)
 //{
-//    QString path = QCoreApplication::applicationDirPath() + "/config.ini";
-//    QSettings settings(path, QSettings::IniFormat);
-//    settings.beginGroup("ComplierList");
-//    QString str("complier");
-//    size_t i = 0;
-//    for(auto it = list.begin(); it!=list.end(); it++)
-//    {
-//        settings.setValue(str.arg(i), *it);
-//        i++;
-//    }
-//    settings.endGroup();
-//}
+//     QString path = QCoreApplication::applicationDirPath() + "/config.ini";
+//     QSettings settings(path, QSettings::IniFormat);
+//     settings.beginGroup("ComplierList");
+//     QString str("complier");
+//     size_t i = 0;
+//     for(auto it = list.begin(); it!=list.end(); it++)
+//     {
+//         settings.setValue(str.arg(i), *it);
+//         i++;
+//     }
+//     settings.endGroup();
+// }

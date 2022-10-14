@@ -5,14 +5,18 @@
 #include "QtPath.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class PackTool; }
+namespace Ui
+{
+    class PackTool;
+}
 QT_END_NAMESPACE
 
 class ZipTool;
 class QLabel;
 class QMovie;
 class QVBoxLayout;
-class ProgressWidget : public QWidget{
+class ProgressWidget : public QWidget
+{
     Q_OBJECT
 public:
     ProgressWidget(QWidget *parent = nullptr);
@@ -20,9 +24,9 @@ public:
     void Stop();
 
 private:
-    QLabel* label;
-    QMovie* movie;
-    QVBoxLayout* layout;
+    QLabel *label;
+    QMovie *movie;
+    QVBoxLayout *layout;
 };
 
 class PackTool : public QMainWindow
@@ -52,20 +56,20 @@ private slots:
     void on_qtPathPushButton_clicked();
 
 signals:
-    void zipSignal(const QString &,const QString&);
+    void zipSignal(const QString &, const QString &);
 
 private:
     Ui::PackTool *ui;
-    QLabel* versionLabel;
-    QLabel* instructionLabel;
+    QLabel *versionLabel;
+    QLabel *instructionLabel;
     QString filePathAndName; // 文件路径及文件名
-    QString appPath; // 文件路径
+    QString appPath;         // 文件路径
     QString appName;
     QString savePath;
     QVector<QString> compilers; // windeployqt路径及文件名
     QProcess *p;
     QtPath qtPath;
-    ProgressWidget* maskLayer;
+    ProgressWidget *maskLayer;
     ZipTool *zip;
     QThread *workerThread;
 };

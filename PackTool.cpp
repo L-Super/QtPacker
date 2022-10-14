@@ -17,7 +17,7 @@
 #include "ZipTool.h"
 #include "Log.h"
 
-PackTool::PackTool(QWidget* parent)
+PackTool::PackTool(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::PackTool),
       versionLabel(new QLabel()),
       instructionLabel(new QLabel()),
@@ -35,7 +35,7 @@ PackTool::PackTool(QWidget* parent)
     instructionLabel->setText("使用说明");
     ui->statusbar->addWidget(instructionLabel);
 
-    if(!Config::instance().GetQtInstallPath().isEmpty())
+    if (!Config::instance().GetQtInstallPath().isEmpty())
     {
         qtPath.SetQtPath(Config::instance().GetQtInstallPath());
         SetComboBox();
@@ -45,23 +45,23 @@ PackTool::PackTool(QWidget* parent)
     ui->savePathLineEdit->setText(Config::instance().GetSavePath());
 
     //进度遮罩层
-    maskLayer->setFixedSize(this->size());//设置窗口大小
+    maskLayer->setFixedSize(this->size()); //设置窗口大小
     maskLayer->setVisible(false);
     stackUnder(maskLayer);
 
     instructionLabel->installEventFilter(this);
     // QProcess连接信号输出信息
-    //2022.08.07 之前放在槽函数中关联，导致每次点击，就会关联一次，造成点击一次会执行n+1次
-    connect(p, &QProcess::readyReadStandardOutput, this, [=] {
+    // 2022.08.07 之前放在槽函数中关联，导致每次点击，就会关联一次，造成点击一次会执行n+1次
+    connect(p, &QProcess::readyReadStandardOutput, this, [=]
+            {
         auto output = p->readAllStandardOutput();
         ui->textEdit->clear();
-        ui->textEdit->append(output);
-    });
-    connect(p, &QProcess::readyReadStandardError, this, [=] {
+        ui->textEdit->append(output); });
+    connect(p, &QProcess::readyReadStandardError, this, [=]
+            {
         auto output = p->readAllStandardError();
         ui->textEdit->setTextColor(Qt::red);
-        ui->textEdit->append(output);
-    });
+        ui->textEdit->append(output); });
 
     zip->moveToThread(workerThread);
     //信号发射后启动线程工作
@@ -69,35 +69,38 @@ PackTool::PackTool(QWidget* parent)
     //该线程结束时销毁
     connect(workerThread, &QThread::finished, zip, &QObject::deleteLater);
     //线程 执行函数结束后发送信号，对结果进行处理
-    connect(zip, &ZipTool::zipSuccess, this, [this](){
+    connect(zip, &ZipTool::zipSuccess, this, [this]()
+            {
         maskLayer->Stop();
-        ui->textEdit->append("制作压缩包成功");
-        QMessageBox::information(this,"提示","制作压缩包成功！");
-    });
-    connect(zip, &ZipTool::zipFailed,this, [this](const QString& errorStr){
+        ui->textEdit->setTextColor(QColor("#3377FF"));
+        ui->textEdit->append("制作zip压缩包成功");
+        QMessageBox::information(this,"提示","制作zip压缩包成功！"); });
+    connect(zip, &ZipTool::zipFailed, this, [this](const QString &errorStr)
+            {
         maskLayer->Stop();
         ui->textEdit->append(errorStr);
-        QMessageBox::information(this,"提示",QString("制作压缩包失败！\n%1").arg(errorStr));
-    });
+        QMessageBox::information(this, "提示", QString("制作压缩包失败！\n%1").arg(errorStr)); });
     //创建线程（此时未启动）
     workerThread->start();
 }
 
-PackTool::~PackTool() {
+PackTool::~PackTool()
+{
     delete ui;
     maskLayer->deleteLater();
     workerThread->quit();
     workerThread->wait();
 }
 
-void PackTool::OpenAppPath() {
+void PackTool::OpenAppPath()
+{
     QString str("选择待打包程序");
     filePathAndName = QFileDialog::getOpenFileName(this, str, ".", tr("*.exe"));
     //    qDebug()<< "filePathAndName " << filePathAndName;
 
     // 通过文件对话框打开的路径形式为“D:/Git_Project/”，故匹配“/”即可
     appName = filePathAndName.section(QRegExp("[/]"), -1);
-    Config::instance().WriteConfig("app name",appName);
+    Config::instance().WriteConfig("app name", appName);
     //    qDebug()<< "appName " << appName;
 
     appPath = filePathAndName.left(filePathAndName.lastIndexOf("/"));
@@ -105,51 +108,56 @@ void PackTool::OpenAppPath() {
     //    qDebug() << "filePath " << appPath;
 }
 
-void PackTool::SavePath() {
+void PackTool::SavePath()
+{
     savePath = QFileDialog::getExistingDirectory(this, ("保存路径"), appPath);
     Config::instance().SetSavePath(savePath);
 }
 
 // 从搜索结果获取下拉框选项
-void PackTool::SetComboBox() {
+void PackTool::SetComboBox()
+{
     compilers = qtPath.GetComplierResult();
 
-    for (const auto& it : compilers) {
+    for (const auto &it : compilers)
+    {
         ui->comboBox->addItem(it);
     }
 }
 
-bool PackTool::CopyApp() {
+bool PackTool::CopyApp()
+{
     QString decApp;
-    if(appName.isEmpty())
+    if (appName.isEmpty())
     {
         appName = Config::instance().GetConfig("app name");
         savePath = Config::instance().GetSavePath();
         auto srcPath = Config::instance().GetAppPath();
         decApp = savePath + "/" + appName;
         filePathAndName = srcPath + "/" + appName;
-        qcout<<decApp<<filePathAndName;
+        qcout << decApp << filePathAndName;
     }
     else
         decApp = savePath + "/" + appName;
     // 删除待打包路径已存在的app
     if (QFile::exists(decApp))
     {
-        qcout<<"exe is exist";
-        if(decApp != filePathAndName)
+        qcout << "exe is exist";
+        if (decApp != filePathAndName)
         {
-            qcout<<"path is different, so delete it";
+            qcout << "path is different, so delete it";
             QFile::remove(decApp);
         }
     }
     return QFile::copy(filePathAndName, decApp);
 }
 
-int PackTool::PackProcess() {
+int PackTool::PackProcess()
+{
     if (!CopyApp())
     {
-        qcout<<"maybe path is same or failed";
-//        return -1;
+        qcout << "maybe path is same or failed";
+        //        return -1;
     }
     QString selectCompiler = ui->comboBox->currentText();
     QString programPath = qtPath.GetSelectComplierPath(selectCompiler);
@@ -165,14 +173,15 @@ int PackTool::PackProcess() {
     arguments << packedApp;
 
     p->start(programPath, arguments);
-//    p->startDetached(programPath, arguments);
+    //    p->startDetached(programPath, arguments);
 
-    if (!p->waitForFinished()) {
+    if (!p->waitForFinished())
+    {
         qcout << "Package failed:" << p->errorString();
         QMessageBox::critical(this, ("错误"), ("编译器选择错误！"));
     }
 
-//    maskLayer->Stop();
+    //    maskLayer->Stop();
     return 0;
 }
 
@@ -187,26 +196,26 @@ void PackTool::SelectionAfterProcessDone()
     if (button == QMessageBox::Ok)
     {
         QString url = "file:///" + Config::instance().GetSavePath();
-        //QUrl::TolerantMode：QUrl 将尝试纠正 URL 中的一些常见错误。这种模式对于解析来自严格符合标准的来源的 URL 非常有用。
+        // QUrl::TolerantMode：QUrl 将尝试纠正 URL 中的一些常见错误。这种模式对于解析来自严格符合标准的来源的 URL 非常有用。
         QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
     }
-    if(button == QMessageBox::Yes)
+    if (button == QMessageBox::Yes)
     {
         maskLayer->Start();
         ZipTool zip;
         auto appName = Config::instance().GetConfig("app name");
         auto zipName = appName.left(appName.lastIndexOf(".")) + ".zip";
-        qcout<<zipName;
+        qcout << zipName;
         auto path = Config::instance().GetSavePath();
         //发射信号，开始执行线程
         emit zipSignal(zipName, path);
-//        if(zip.Zip(zipName, path) == false)
-//        {
-//            qcout<<"zip error";
-//            return;
-//        }
-//        ui->textEdit->append("制作压缩包成功");
-//        QMessageBox::information(this,"提示","制作压缩包成功！");
+        //        if(zip.Zip(zipName, path) == false)
+        //        {
+        //            qcout<<"zip error";
+        //            return;
+        //        }
+        //        ui->textEdit->append("制作压缩包成功");
+        //        QMessageBox::information(this,"提示","制作压缩包成功！");
     }
 }
 
@@ -217,12 +226,12 @@ bool PackTool::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::MouseButtonPress) //鼠标点击
         {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event); // 事件转换
 
-            if(mouseEvent->button() == Qt::LeftButton)
+            if (mouseEvent->button() == Qt::LeftButton)
             {
                 QDialog dlg;
-                dlg.setFixedSize(QSize(480,200));
+                dlg.setFixedSize(QSize(480, 200));
                 auto layout = new QHBoxLayout(&dlg);
                 auto label = new QLabel(&dlg);
                 label->setText("<h3>使用说明</h3>"
@@ -246,37 +255,43 @@ bool PackTool::eventFilter(QObject *obj, QEvent *event)
         return QWidget::eventFilter(obj, event);
 }
 
-void PackTool::on_appPathPushButton_clicked() {
+void PackTool::on_appPathPushButton_clicked()
+{
     OpenAppPath();
     ui->appPathLineEdit->setText(appPath);
 }
 
-void PackTool::on_savePathPushButton_clicked() {
+void PackTool::on_savePathPushButton_clicked()
+{
     SavePath();
     ui->savePathLineEdit->setText(savePath);
 }
 
-void PackTool::on_packPushButton_clicked() {
-    if(ui->qtPathLineEdit->text().isEmpty())
+void PackTool::on_packPushButton_clicked()
+{
+    if (ui->qtPathLineEdit->text().isEmpty())
     {
         QMessageBox::critical(this, ("错误"), ("Qt路径未选择！"));
         return;
     }
-    if (appPath.isEmpty() && ui->appPathLineEdit->text().isEmpty()) {
+    if (appPath.isEmpty() && ui->appPathLineEdit->text().isEmpty())
+    {
         QMessageBox::critical(this, ("错误"), ("软件路径未选择！"));
         return;
     }
-    if (appName.isEmpty() && ui->savePathLineEdit->text().isEmpty()) {
+    if (appName.isEmpty() && ui->savePathLineEdit->text().isEmpty())
+    {
         QMessageBox::critical(this, ("错误"), ("打包路径未选择！"));
         return;
     }
 
     ui->statusbar->showMessage("开始打包...", 1000);
 
-//    maskLayer->Start();
+    //    maskLayer->Start();
 
     // 调用打包程序
-    if (PackProcess() < 0) {
+    if (PackProcess() < 0)
+    {
         qcout << "PackProcess func failed";
         return;
     }
@@ -285,11 +300,11 @@ void PackTool::on_packPushButton_clicked() {
 
     SelectionAfterProcessDone();
 
-
-//    maskLayer->Stop();
+    //    maskLayer->Stop();
 }
 
-void PackTool::on_qtPathPushButton_clicked() {
+void PackTool::on_qtPathPushButton_clicked()
+{
     //返回桌面路径
     QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     //    qDebug()<<defaultPath;
@@ -303,10 +318,10 @@ void PackTool::on_qtPathPushButton_clicked() {
     SetComboBox();
 }
 
-ProgressWidget::ProgressWidget(QWidget* parent):QWidget(parent),
-    label(new QLabel()),
-    movie(new QMovie(":/images/resources/images/loading.gif")),
-    layout(new QVBoxLayout(this))
+ProgressWidget::ProgressWidget(QWidget *parent) : QWidget(parent),
+                                                  label(new QLabel()),
+                                                  movie(new QMovie(":/images/resources/images/loading.gif")),
+                                                  layout(new QVBoxLayout(this))
 {
     setWindowFlags(/*Qt::CustomizeWindowHint |*/ Qt::FramelessWindowHint);
     setAutoFillBackground(true);
@@ -335,4 +350,3 @@ void ProgressWidget::Stop()
     this->setVisible(false);
     this->lower();
 }
-
