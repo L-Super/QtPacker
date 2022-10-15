@@ -7,7 +7,7 @@
 
 QtPath::QtPath(QObject *parent)
     : QObject{parent},
-      versionReg(R"(\d{1}.\d{1,}.[0-9])") //匹配5.15.2文件夹
+      versionReg(R"(\d{1}.\d{1,}.[0-9])")
 {
 }
 
@@ -16,6 +16,8 @@ void QtPath::SetQtPath(const QString &path)
     FindCompiler(std::forward<const QString &>(path));
 }
 
+//path = D:\Qt
+//D:\Qt\5.15.2\mingw81_64
 bool QtPath::FindCompiler(const QString &path)
 {
     QDir dir(path);
@@ -32,6 +34,7 @@ bool QtPath::FindCompiler(const QString &path)
     qPath.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     auto vDirList = qPath.entryList().toVector();
 
+    //匹配5.15.2文件夹
     QString result = RegexMatch(versionReg, vDirList);
 
     if (result.isEmpty())
@@ -41,6 +44,7 @@ bool QtPath::FindCompiler(const QString &path)
         return false;
     }
 
+    //进入后即所含编译器的文件夹，D:\Qt\5.15.2
     qPath.cd(result);
     complierList = qPath.entryList().toVector();
     //    for(auto it:complierList)
@@ -65,19 +69,21 @@ QString QtPath::RegexMatch(QRegExp ex, const QVector<QString> &v)
     return QString();
 }
 
-QString QtPath::GetSelectComplierPath(const QString &str)
+QString QtPath::GetEnvBatPath(const QString &str)
 {
     QDir dir(qPath.path());
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
     qcout << "选择的路径及编译器：" << dir.path() << str;
     dir.cd(str);
-    dir.cd("bin");
-    //    qcout << dir.path();
+    if(!dir.cd("bin"))
+    {
+        qcout<<"cd bin folder failed";
+        return QString();
+    }
     auto list = dir.entryInfoList();
     for (auto it = list.begin(); it != list.end(); it++)
     {
-        //        qcout << it->baseName();
-        if (it->baseName() == "windeployqt")
+        if (it->baseName() == "qtenv2")
             return it->absoluteFilePath();
     }
     return QString();

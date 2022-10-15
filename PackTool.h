@@ -11,7 +11,6 @@ namespace Ui
 }
 QT_END_NAMESPACE
 
-class ZipTool;
 class QLabel;
 class QMovie;
 class QVBoxLayout;
@@ -29,6 +28,8 @@ private:
     QVBoxLayout *layout;
 };
 
+class ZipTool;
+class CmdProcess;
 class PackTool : public QMainWindow
 {
     Q_OBJECT
@@ -40,7 +41,7 @@ public:
     void SavePath();
     void SetComboBox();
     bool CopyApp();
-    int PackProcess();
+    int LaunchProcess();
     void SelectionAfterProcessDone();
 
 protected:
@@ -72,4 +73,5 @@ private:
     ProgressWidget *maskLayer;
     ZipTool *zip;
     QThread *workerThread;
+    CmdProcess *cmd;
 };

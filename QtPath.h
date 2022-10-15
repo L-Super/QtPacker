@@ -11,8 +11,17 @@ class QtPath : public QObject
     Q_OBJECT
 public:
     explicit QtPath(QObject *parent = nullptr);
+    /**
+     * @brief SetQtPath 选择Qt安装路径
+     * @param path
+     */
     void SetQtPath(const QString &path);
-    QString GetSelectComplierPath(const QString &str);
+    /**
+     * @brief GetEnvBatPath 获取bin路径下的qtenv2.bat路径
+     * @param str 选择的编译器
+     * @return
+     */
+    QString GetEnvBatPath(const QString &str);
     QVector<QString> GetComplierResult() { return complierList; }
 
 private:

@@ -12,19 +12,20 @@
 #include <QDebug>
 #include <QMovie>
 
-#include "Config.h"
+#include "CmdProcess.h"
 #include "Version.h"
 #include "ZipTool.h"
+#include "Config.h"
 #include "Log.h"
 
 PackTool::PackTool(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::PackTool),
       versionLabel(new QLabel()),
       instructionLabel(new QLabel()),
-      p(new QProcess()),
       maskLayer(new ProgressWidget(this)),
       zip(new ZipTool()),
-      workerThread(new QThread())
+      workerThread(new QThread()),
+      cmd(new CmdProcess())
 {
     ui->setupUi(this);
     setWindowTitle("QtPacker");
@@ -50,18 +51,15 @@ PackTool::PackTool(QWidget *parent)
     stackUnder(maskLayer);
 
     instructionLabel->installEventFilter(this);
-    // QProcess连接信号输出信息
-    // 2022.08.07 之前放在槽函数中关联，导致每次点击，就会关联一次，造成点击一次会执行n+1次
-    connect(p, &QProcess::readyReadStandardOutput, this, [=]
-            {
-        auto output = p->readAllStandardOutput();
-        ui->textEdit->clear();
-        ui->textEdit->append(output); });
-    connect(p, &QProcess::readyReadStandardError, this, [=]
-            {
-        auto output = p->readAllStandardError();
+
+    connect(cmd, &CmdProcess::readStandardOutput, this, [=](const QByteArray &byte) {
+        ui->textEdit->append(QString::fromLocal8Bit(byte));
+    });
+    connect(cmd, &CmdProcess::readStandardError, this, [=](const QByteArray &byte) {
         ui->textEdit->setTextColor(Qt::red);
-        ui->textEdit->append(output); });
+        ui->textEdit->append(QString::fromLocal8Bit(byte));
+        ui->textEdit->setTextColor(Qt::black);
+    });
 
     zip->moveToThread(workerThread);
     //信号发射后启动线程工作
@@ -152,7 +150,7 @@ bool PackTool::CopyApp()
     return QFile::copy(filePathAndName, decApp);
 }
 
-int PackTool::PackProcess()
+int PackTool::LaunchProcess()
 {
     if (!CopyApp())
     {
@@ -160,23 +158,18 @@ int PackTool::PackProcess()
         //        return -1;
     }
     QString selectCompiler = ui->comboBox->currentText();
-    QString programPath = qtPath.GetSelectComplierPath(selectCompiler);
-    qcout << "windeployqt.exe path is" << programPath;
-
-    QStringList arguments;
-
-    QString packedApp = savePath + "/" + appName;
-    qcout << "打包路径：" << packedApp;
-    arguments << packedApp;
-
-    p->start(programPath, arguments);
-    //    p->startDetached(programPath, arguments);
-
-    if (!p->waitForFinished())
+    QString envBatPath = qtPath.GetEnvBatPath(selectCompiler);
+    if(envBatPath.isEmpty())
     {
-        qcout << "Package failed:" << p->errorString();
-        QMessageBox::critical(this, ("错误"), ("编译器选择错误！"));
+        qcout<<"env bat path is empty";
+        return -1;
     }
+    qcout << "env bat path is" << envBatPath;
+
+    QString packApp = savePath + "/" + appName;
+
+    cmd->StartProcess(envBatPath, packApp);
+
     return 0;
 }
 
@@ -280,12 +273,14 @@ void PackTool::on_packPushButton_clicked()
         return;
     }
 
+    ui->textEdit->clear();
+
     ui->statusbar->showMessage("开始打包...", 1000);
 
     //    maskLayer->Start();
 
     // 调用打包程序
-    if (PackProcess() < 0)
+    if (LaunchProcess() < 0)
     {
         qcout << "PackProcess func failed";
         return;
