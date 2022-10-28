@@ -25,3 +25,26 @@ Qt图形化自动化打包工具，针对基于Qt开发的程序进行打包。�
 - [ ] 压缩包第二次压缩时，提示是否删除原压缩文件
 - [ ] 查找Qt安装路径时，使用递归
 
+考虑怎样的形式调用更好
+
+1. 修改变量
+2. 直接读取bat内容，构造新的bat
+
+```bash
+@echo off
+::E:/Code/QtProject/qt-packer/build-QtPackTool-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/debug/QtPacker.exe
+@REM You can not have spaces on either side of an equal sign
+set envPath=D:/Qt/5.15.2/mingw81_64/bin/qtenv2.bat
+set APP=E:/Code/QtProject/untitled/a/QtPacker.exe
+
+call %envPath%
+
+@REM echo Setting up environment for Qt usage...
+@REM set PATH=D:\Qt\5.15.2\mingw81_64\bin;D:/Qt/Tools/mingw810_64\bin;%PATH%
+@REM cd /D D:\Qt\5.15.2\mingw81_64
+
+windeployqt %APP%
+
+pause
+```
+
