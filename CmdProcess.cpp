@@ -30,7 +30,7 @@ bool CmdProcess::StartProcess(const QString& envBatPath, const QString &appPath)
 
     qcout<< "state"<< p->state()<<"id"<<p->processId();
 
-//    p->waitForFinished(3000);
+    p->waitForFinished(1000);
     //TODO:结束进程
     p->terminate();
     qcout<< "state"<< p->state();

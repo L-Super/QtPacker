@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QSettings>
+#include "Log.h"
 
 Config::Config(QObject *parent)
     : QObject{parent}
@@ -14,7 +15,7 @@ Config::Config(QObject *parent)
     if (!file.exists())
     {
         //        file.open(QIODevice::WriteOnly);
-        qWarning() << "ini file not exists";
+        qcout << "ini file not exists";
         file.close();
         WritePath();
     }

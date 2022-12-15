@@ -74,8 +74,6 @@ msvc {
     QMAKE_CXXFLAGS += /utf-8
 }
 
-#win32: LIBS += -L$$PWD/lib/ -lzlib -lbz2 -lzip
-
 win32: LIBS += -L$$PWD/bin/ -lzip
 
 INCLUDEPATH += $$PWD/include
