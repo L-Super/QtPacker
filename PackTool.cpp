@@ -152,10 +152,13 @@ bool PackTool::CopyApp()
 
 int PackTool::LaunchProcess()
 {
-    if (!CopyApp())
+    if(appPath != savePath)
     {
-        qcout << "maybe path is same or failed";
-        //        return -1;
+        if (!CopyApp())
+        {
+            qcout << "maybe path is same or failed";
+            //        return -1;
+        }
     }
     QString selectCompiler = ui->comboBox->currentText();
     QString envBatPath = qtPath.GetEnvBatPath(selectCompiler);
