@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui gui-private
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -73,10 +73,5 @@ msvc {
     QMAKE_CFLAGS += /utf-8
     QMAKE_CXXFLAGS += /utf-8
 }
-
-win32: LIBS += -L$$PWD/bin/ -lzip
-
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
 
 

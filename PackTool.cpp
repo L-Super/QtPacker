@@ -197,16 +197,9 @@ void PackTool::SelectionAfterProcessDone()
         auto appName = Config::instance().GetConfig("app name");
         auto zipName = appName.left(appName.lastIndexOf(".")) + ".zip";
         qcout << zipName;
-        auto path = Config::instance().GetSavePath();
+        auto savePath = Config::instance().GetSavePath();
         //发射信号，开始执行线程
-        emit zipSignal(zipName, path);
-        //        if(zip.Zip(zipName, path) == false)
-        //        {
-        //            qcout<<"zip error";
-        //            return;
-        //        }
-        //        ui->textEdit->append("制作压缩包成功");
-        //        QMessageBox::information(this,"提示","制作压缩包成功！");
+        emit zipSignal(zipName, savePath);
     }
 }
 

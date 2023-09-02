@@ -20,7 +20,10 @@ public:
      * @param folderPath 文件夹路径
      * @return
      */
-    bool Zip(const QString &zipName, const QString &folderPath);
+    bool Zip(const QString &zipName, const QString &saveFolderPath);
+
+private:
+    void StartZip(const QString &zipName, const QString &sourceSavePath);
 
 signals:
     void zipSuccess();
